@@ -72,13 +72,13 @@ public class FutebolQuiz {
         return respostaUsuario == pergunta.getRespostaCorreta();
     }
 
-    private static void exibirRespostas(List<String> respostas) {
+    public static void exibirRespostas(List<String> respostas) {
         for (int i = 0; i < respostas.size(); i++) {
             System.out.println((i + 1) + ". " + respostas.get(i));
         }
     }
 
-    private static void exibirResultado(int pontos, int totalPerguntas) {
+    public static void exibirResultado(int pontos, int totalPerguntas) {
         System.out.println("\nFim do jogo! Você acertou " + pontos + " de " + totalPerguntas + " perguntas.");
     }
 

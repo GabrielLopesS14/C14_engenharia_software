@@ -1,79 +1,97 @@
 package org.example.quiz;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Collections;
+import java.io.FileReader;
+import java.io.IOException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import com.google.gson.JsonParseException;
 
 public class FutebolQuiz {
 
+    private static final String PERGUNTAS_JSON = "perguntas.json";
+
     public static void main(String[] args) {
-        //Carregando as perguntas de um JSON
         List<Pergunta> perguntas = carregarPerguntas();
-
-        Scanner scanner = new Scanner(System.in);
-        int pontos = 0;
-
-        System.out.println("Bem-vindo ao Genio Quiz");
-        System.out.println("Tema de hoje: FUTEBOL");
-
-        //Embaralhando as perguntas
-        Collections.shuffle(perguntas);
-
-        //Limitar o número de perguntas a 5, ou ao número de perguntas disponíveis(teste inicial)
-        int numPerguntas = Math.min(perguntas.size(), 5);
-
-        //Perguntas são feitas até o número limite
-        for (int i = 0; i < numPerguntas; i++) {
-            Pergunta pergunta = perguntas.get(i);
-            System.out.println("\nPergunta " + (i + 1) + ": " + pergunta.getPergunta());
-            List<String> respostas = pergunta.getRespostas();
-            for (int j = 0; j < respostas.size(); j++) {
-                System.out.println((j + 1) + ". " + respostas.get(j));
-            }
-
-            int respostaUsuario = -1;
-
-            //Garantindo que o usuário forneça uma resposta válida
-            while (respostaUsuario < 1 || respostaUsuario > respostas.size()) {
-                System.out.print("Digite o número da sua resposta: ");
-                if (scanner.hasNextInt()) {
-                    respostaUsuario = scanner.nextInt();
-                    if (respostaUsuario < 1 || respostaUsuario > respostas.size()) {
-                        System.out.println("Resposta invalida. Tente novamente.");
-                    }
-                } else {
-                    System.out.println("Por favor, insira um número valido.");
-                    scanner.next(); //Limpando entrada recusada
-                }
-            }
-
-            //Subtrai 1 para ajustar ao índice da lista (começa do 0) - Tava dando erro!!
-            respostaUsuario--;
-
-            if (respostaUsuario == pergunta.getRespostaCorreta()) {
-                pontos++;
-                System.out.println("Resposta correta!");
-            } else {
-                System.out.println("Resposta errada! A resposta correta era: " + respostas.get(pergunta.getRespostaCorreta()));
-            }
-        }
-
-        System.out.println("\nFim do jogo! Você acertou " + pontos + " de " + numPerguntas + " perguntas.");
+        int pontos = jogar(perguntas);
+        exibirResultado(pontos, perguntas.size());
     }
 
-    private static List<Pergunta> carregarPerguntas() {
+    public static int jogar(List<Pergunta> perguntas) {
+        int pontos = 0;
+
+        //Embaralhar perguntas
+        Collections.shuffle(perguntas);
+
+        //Limitar o número de perguntas a 5 ou o número de perguntas disponíveis
+        int numPerguntas = Math.min(perguntas.size(), 5);  //Garante que nunca será mais de 5
+
+        for (int i = 0; i < numPerguntas; i++) {
+            Pergunta pergunta = perguntas.get(i);
+            int respostaUsuario = fazerPerguntaInterativo(pergunta);
+            if (respostaUsuario == pergunta.getRespostaCorreta()) {
+                pontos++;
+            }
+        }
+        return pontos;
+    }
+
+    //Versão com Scanner para interação com o usuário (execução normal)
+    public static int fazerPerguntaInterativo(Pergunta pergunta) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\n" + pergunta.getPergunta());
+        exibirRespostas(pergunta.getRespostas());
+
+        //Solicita a resposta do usuário
+        int respostaUsuario;
+        while (true) {
+            System.out.print("Digite o número da sua resposta: ");
+            if (scanner.hasNextInt()) {
+                respostaUsuario = scanner.nextInt();
+                if (respostaUsuario >= 1 && respostaUsuario <= pergunta.getRespostas().size()) {
+                    return respostaUsuario - 1; //Ajusta para o índice correto
+                } else {
+                    System.out.println("Resposta inválida. Tente novamente.");
+                }
+            } else {
+                System.out.println("Por favor, insira um número válido.");
+                scanner.next(); //Limpar a entrada inválida
+            }
+        }
+    }
+
+    //Versão de teste do método fazerPergunta, sem interação com o usuário
+    public static boolean fazerPergunta(int respostaUsuario, Pergunta pergunta) {
+        System.out.println("\n" + pergunta.getPergunta());
+        exibirRespostas(pergunta.getRespostas());
+
+        return respostaUsuario == pergunta.getRespostaCorreta();
+    }
+
+    private static void exibirRespostas(List<String> respostas) {
+        for (int i = 0; i < respostas.size(); i++) {
+            System.out.println((i + 1) + ". " + respostas.get(i));
+        }
+    }
+
+    private static void exibirResultado(int pontos, int totalPerguntas) {
+        System.out.println("\nFim do jogo! Você acertou " + pontos + " de " + totalPerguntas + " perguntas.");
+    }
+
+    public static List<Pergunta> carregarPerguntas() {
         List<Pergunta> perguntas = new ArrayList<>();
         try {
-            //Leitura do arquivo JSON
-            FileReader reader = new FileReader("perguntas.json");
+            FileReader reader = new FileReader(PERGUNTAS_JSON);
             JsonArray perguntasJson = JsonParser.parseReader(reader).getAsJsonArray();
+
+            //Se o JSON estiver vazio, retorna uma lista vazia
+            if (perguntasJson.size() == 0) {
+                return perguntas;
+            }
 
             for (int i = 0; i < perguntasJson.size(); i++) {
                 JsonObject perguntaJson = perguntasJson.get(i).getAsJsonObject();
@@ -86,13 +104,14 @@ public class FutebolQuiz {
                 }
 
                 int respostaCorreta = perguntaJson.get("correta").getAsInt();
-
                 perguntas.add(new Pergunta(perguntaTexto, respostas, respostaCorreta));
             }
-
-        } catch (IOException e) {
+        } catch (IOException | JsonParseException e) {
+            //Se o arquivo estiver mal formatado ou com erro de leitura, retorna lista vazia
             System.out.println("Erro ao carregar perguntas: " + e.getMessage());
+            return perguntas;  //Retorna uma lista vazia
         }
-        return perguntas;
+        return perguntas;  //Retorna as perguntas carregadas
     }
+
 }

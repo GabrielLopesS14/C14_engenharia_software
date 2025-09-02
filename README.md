@@ -6,3 +6,5 @@ Repositório para as aulas de C14 - Engenharia de Software cursada no 8º perío
 -Adicionado projeto Maven - Controle de Dependencias em Java;
 
 -Teste Branch master;
+
+-Inserindo testes unitários

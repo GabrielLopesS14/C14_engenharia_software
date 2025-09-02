@@ -12,15 +12,12 @@ public class Pergunta {
         this.respostas = respostas;
         this.respostaCorreta = respostaCorreta;
     }
-
     public String getPergunta() {
         return pergunta;
     }
-
     public List<String> getRespostas() {
         return respostas;
     }
-
     public int getRespostaCorreta() {
         return respostaCorreta;
     }

@@ -13,5 +13,15 @@
     "pergunta": "Qual clube venceu a UEFA Champions League em 2018?",
     "respostas": ["Real Madrid", "Liverpool", "Bayern Munich", "Juventus"],
     "correta": 0
+  },
+  {
+    "pergunta": "Quem é o maior artilheiro da história da Copa do Mundo?",
+    "respostas": ["Marta", "Pele", "Klose", "Miura"],
+    "correta": 2
+  },
+  {
+    "pergunta": "Quantos times participaram da Copa do Mundo de 2018?",
+    "respostas": ["32", "24", "48", "16"],
+    "correta": 0
   }
 ]

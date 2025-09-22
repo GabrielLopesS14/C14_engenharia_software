@@ -59,7 +59,7 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.example.quiz.FutebolQuiz</mainClass> <!-- Sua classe principal -->
+                                    <mainClass>org.example.quiz.FutebolQuiz</mainClass> <!-- Classe principal -->
                                 </transformer>
                             </transformers>
                         </configuration>

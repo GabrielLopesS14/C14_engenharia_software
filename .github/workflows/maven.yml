@@ -22,13 +22,62 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4 #clona o código na máquina virtual criada acima
-    - name: Set up JDK 17 #configurando a JDK
+    - name: Set up JDK 17 #configurando a JDK, projeto foi criado com o 17
       uses: actions/setup-java@v4 #comando de setup da JDK
       with:
-        java-version: '17' #versão da JDK
+        java-version: '17' #versão da JDK, para esse projeto é 17
         distribution: 'temurin' #distribuição da versão do JAVA (pode ser qualquer um)
         cache: maven 
     - name: Build with Maven 
       run: |
         cd Projeto_Perguntas_Maven 
         mvn clean install -DskipTests
+    
+    - name: Upload build artifcat
+      uses: actions/upload-artifcat@v4
+      with:
+        name: jar file
+        path: Projeto_Perguntas_Maven/target/Projeto_Perguntas_Maeven-1.0-SNAPSHOT.jar
+
+  test:
+
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4 #clona o código na máquina virtual criada acima
+    - name: Set up JDK 17 #configurando a JDK, projeto foi criado com o 17
+      uses: actions/setup-java@v4 #comando de setup da JDK
+      with:
+        java-version: '17' #versão da JDK, para esse projeto é 17
+        distribution: 'temurin' #distribuição da versão do JAVA (pode ser qualquer um)
+        cache: maven 
+    - name: Build with Maven 
+      run: |
+        cd Projeto_Perguntas_Maven 
+        mvn clean test site 
+    
+    - name: Upload build artifcat
+      uses: actions/upload-artifcat@v4
+      with:
+        name: test reports
+        path: Projeto_Perguntas_Maven/target/site/
+  
+  notification:
+
+    needs: test
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4 #clona o código na máquina virtual criada acima
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    - name: Send email notification
+      run: |
+        python3 codigos/enviarEmail.py
+      env:
+        EMAIL_DESTINATARIO: ${{ secrets.EMAIL_DESTINATARIO }}

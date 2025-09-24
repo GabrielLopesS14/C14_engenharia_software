@@ -88,9 +88,9 @@ public class FutebolQuiz {
             FileReader reader = new FileReader(PERGUNTAS_JSON);
             JsonArray perguntasJson = JsonParser.parseReader(reader).getAsJsonArray();
 
-            //Se o JSON estiver vazio, retorna uma lista vazia
-            if (perguntasJson.size() == 0) {
-                return perguntas;
+            //Verificando se o JSON está vazio ou nulo
+            if (perguntasJson == null || perguntasJson.size() == 0) {
+                return perguntas;  // Retorna lista vazia
             }
 
             for (int i = 0; i < perguntasJson.size(); i++) {
@@ -107,9 +107,9 @@ public class FutebolQuiz {
                 perguntas.add(new Pergunta(perguntaTexto, respostas, respostaCorreta));
             }
         } catch (IOException | JsonParseException e) {
-            //Se o arquivo estiver mal formatado ou com erro de leitura, retorna lista vazia
+            //Caso haja erro ao carregar o JSON, retornamos lista vazia ou null
             System.out.println("Erro ao carregar perguntas: " + e.getMessage());
-            return perguntas;  //Retorna uma lista vazia
+            return null;  //Retorna null para indicar falha no carregamento
         }
         return perguntas;  //Retorna as perguntas carregadas
     }

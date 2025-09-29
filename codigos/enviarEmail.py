@@ -9,8 +9,8 @@ from email.mime.multipart import MIMEMultipart
 email_destinatario = os.getenv('EMAIL_DESTINATARIO')
 
 #Configurações de envio (remetente do e-mail)
-email_remetente = 'g.lopes@gec.inatel.br'  #O remetente do e-mail
-senha_remetente = 'Mat240#@'  #A senha do remetente
+email_remetente = os.getenv('EMAIL_REMETENTE')  #O remetente do e-mail
+senha_remetente = os.getenv('EMAIL_SENHA')      #A senha do remetente (armazenada como Secret no GitHub)
 
 #Corpo do e-mail
 assunto = 'Notificação de Execução do Pipeline'
